@@ -5,6 +5,7 @@ var knex = require('../../../db/knex');
 var passport = require('../lib/passport');
 var bcrypt = require('bcrypt');
 var helpers = require('../lib/helpers');
+var queries = require('../lib/queries/queries');
 
 // show all authors
 router.get('/', function(req, res, next) {
