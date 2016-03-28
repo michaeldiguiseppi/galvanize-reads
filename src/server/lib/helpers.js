@@ -1,4 +1,3 @@
-
 var bcrypt = require('bcrypt');
 
 function ensureAuthentication(req, res, next) {
@@ -40,6 +39,7 @@ function checkPassword(password, hashed) {
     });
   });
 }
+
 
 module.exports = {
   ensureAuthentication: ensureAuthentication,

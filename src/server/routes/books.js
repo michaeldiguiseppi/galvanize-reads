@@ -6,11 +6,13 @@ var passport = require('../lib/passport');
 var bcrypt = require('bcrypt');
 var helpers = require('../lib/helpers');
 var queries = require('../lib/queries/queries');
+var utils = require('../lib/utils');
 
 // show all books
 router.get('/', function(req, res, next) {
-  queries.allBooks().then(function(data) {
-      res.render('books/index', {books: data});
+  queries.allBooks().then(function(books) {
+    var data = utils.matchAuthorsToBooks(books);
+    res.render('books/index', {books: data});
   });
 });
 

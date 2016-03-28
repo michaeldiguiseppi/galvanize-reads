@@ -1,4 +1,4 @@
-var knex = require('../../../knex');
+var knex = require('../../../../db/knex');
 function Books() {
   return knex('books');
 }
@@ -6,10 +6,39 @@ function Authors() {
   return knex('authors');
 }
 
+function BooksAuthors() {
+  return knex('books_authors');
+}
+
+// function getAllAuthors() {
+//   return Authors()
+//     .innerJoin('books_authors', 'authors.id', 'books_authors.author_id')
+//     .then(function(data) {
+//       return data;
+//     });
+// }
+
+// function getAllBooks() {
+//   return Books()
+//     .innerJoin('books_authors', 'books.id', 'books_authors.book_id')
+//     .then(function(books) {
+//       allAuthors().then(function(authors) {
+//         return authors;
+//       });
+//       attachAuthorsToBooks(books, authors);
+//     });
+// }
+
+// function attachAuthorsToBooks(books, authors) {
+//
+// }
 
 // get all books
 function allBooks() {
-  return Books().then(function(data) {
+  return Books()
+  .innerJoin('books_authors', 'books.id', 'books_authors.book_id')
+  .innerJoin('authors', 'authors.id', 'books_authors.author_id')
+  .then(function(data) {
     return data;
   });
 }
@@ -65,3 +94,17 @@ function editAuthor(id, body) {
 function deleteAuthor(id) {
   return Authors().where('id', id).del();
 }
+
+module.exports = {
+  //getAllBooks: getAllBooks,
+  allBooks: allBooks,
+  oneBook: oneBook,
+  addBook: addBook,
+  editBook: editBook,
+  deleteBook: deleteBook,
+  allAuthors: allAuthors,
+  oneAuthor: oneAuthor,
+  addAuthor: addAuthor,
+  editAuthor: editAuthor,
+  deleteAuthor: deleteAuthor,
+};

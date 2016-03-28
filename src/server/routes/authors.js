@@ -6,6 +6,7 @@ var passport = require('../lib/passport');
 var bcrypt = require('bcrypt');
 var helpers = require('../lib/helpers');
 var queries = require('../lib/queries/queries');
+var utils = require('../lib/utils');
 
 // show all authors
 router.get('/', function(req, res, next) {
@@ -14,7 +15,9 @@ router.get('/', function(req, res, next) {
 
 // show one author
 router.get('/:id', function(req, res, next) {
-  res.render('authors/show', { title: 'Express' });
+  queries.oneAuthor(req.params.id).then(function(data) {
+      res.render('authors/show', {author: data[0]});
+  });
 });
 
 // add new author
