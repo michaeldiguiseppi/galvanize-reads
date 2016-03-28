@@ -10,15 +10,14 @@ var utils = require('../lib/utils');
 
 // show all books
 router.get('/', function(req, res, next) {
-  queries.allBooks().then(function(books) {
-    var data = utils.matchAuthorsToBooks(books);
+  queries.getAll().then(function(data) {
     res.render('books/index', {books: data});
   });
 });
 
 // show one book
 router.get('/:id', function(req, res, next) {
-  queries.oneBook(req.params.id).then(function(data) {
+  queries.getAll(req.params.id).then(function(data) {
     res.render('books/show', { book: data[0] });
   });
 });

@@ -10,7 +10,9 @@ var utils = require('../lib/utils');
 
 // show all authors
 router.get('/', function(req, res, next) {
-  res.render('authors/index', { title: 'Express' });
+  queries.allAuthors().then(function(data) {
+    res.render('authors/index', { authors: data });
+  });
 });
 
 // show one author

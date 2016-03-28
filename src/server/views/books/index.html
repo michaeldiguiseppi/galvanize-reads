@@ -8,28 +8,27 @@
   <div class="container">
     {% for book in books %}
       <div class="row">
-        <div class="col-lg-4">
-          <img src="{{ book.cover_url }}" alt="cover" width="100%" height="100%"/>
+        <a href="/books/{{ book.id }}">
+          <div class="col-lg-4">
+            <img src="{{ book.cover_url }}" alt="cover" width="100%" height="100%"/>
+          </div>
+          <div class="col-lg-8">
+            <h3>
+              {{ book.title }}
+            </h3>
+            <h4>
+              By&nbsp;
+                  {{ book.authors }}
+            </h4>
+            <p>
+              Genre: {{ book.genre }}
+            </p>
+            <p>
+              {{ book.description }}
+            </p>
+          </div>
         </div>
-        <div class="col-lg-8">
-          <h3>
-            {{ book.title }}
-          </h3>
-          <h4>
-            {% for author in authors %}
-              {% if author.id == book.author_id %}
-                {{ author.first_name }} {{ author.last_name }}
-              {% endif %}
-            {% endfor %}
-          </h4>
-          <p>
-            {{ book.genre }}
-          </p>
-          <p>
-            {{ book.description }}
-          </p>
-        </div>
-      </div>
+      </a>
       <br />
     {% endfor %}
   </div>

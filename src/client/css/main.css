@@ -3,11 +3,13 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  text-decoration: none;
+  color: black;
 }
 
 a:hover {
   text-decoration: none;
+  color: black;
 }
 
 .navbar-brand img {

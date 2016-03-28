@@ -33,6 +33,24 @@ function BooksAuthors() {
 //
 // }
 
+function getAll(arg) {
+
+  var queryString = 'select books.id, books.title, books.genre, books.description, '+
+  'books.cover_url, string_agg(authors.first_name || \' \' || authors.last_name, \', \') '+
+  'as authors from books inner join books_authors on books_authors.book_id = books.id '+
+  'inner join authors on books_authors.author_id = authors.id ';
+
+  if (arg) {
+    queryString += ('where books.id = ' + arg);
+  }
+  var queryEnd = ' group by books.id, books.title, books.genre, books.description, books.cover_url order by books.id';
+  queryString += queryEnd;
+  return knex.raw(queryString)
+  .then(function(data) {
+    return data.rows;
+  });
+}
+
 // get all books
 function allBooks() {
   return Books()
@@ -96,6 +114,7 @@ function deleteAuthor(id) {
 }
 
 module.exports = {
+  getAll: getAll,
   //getAllBooks: getAllBooks,
   allBooks: allBooks,
   oneBook: oneBook,
