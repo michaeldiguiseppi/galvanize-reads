@@ -18,14 +18,16 @@ router.get('/', function(req, res, next) {
 
 // add new author
 router.get('/new', function(req, res, next) {
-  var booksArray = [];
-  queries.getAllAuthors().then(function(data) {
-    res.render('authors/new', { books: data.books, title: 'Add Author' });
-  });
+    queries.getAll().then(function(books) {
+      res.render('authors/new', { bookArray: books, title: 'Add Author', books: [] });
+    });
 });
 
 router.post('/new', function(req, res, next) {
   // use a query to input information to the DB.
+  queries.addAuthor(req.body).then(function(ids) {
+    res.redirect('/authors/'+ids[0]);
+  });
 });
 
 // edit one author
@@ -43,6 +45,9 @@ router.get('/:id/edit', function(req, res, next) {
 
 router.post('/:id/edit', function(req, res, next) {
   // use a query to edit the information based on ID.
+  queries.editAuthor(req.params.id, req.body).then(function(id) {
+    res.redirect('/authors/'+id[0]);
+  });
 });
 
 // delete one author
@@ -53,7 +58,7 @@ router.post('/:id/delete', function(req, res, next) {
 
 // show one author
 router.get('/:id', function(req, res, next) {
-  queries.oneAuthor(req.params.id).then(function(data) {
+  queries.getAllAuthors(req.params.id).then(function(data) {
       res.render('authors/show', {author: data[0]});
   });
 });

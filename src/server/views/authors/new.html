@@ -41,7 +41,7 @@
       <div class="col-lg-6">
         <select multiple="" class="form-control" id="books" name="books">
           {% for book in bookArray %}
-          <option value="{{ book.id }}" {% if books.indexOf(book.id) != -1 %}selected {% endif %}>{{ book.title }}</option>
+          <option value="{{ book.id }}" {% if books.indexOf(book.id) != -1 %} selected {% endif %}>{{ book.title }}</option>
           {% endfor %}
         </select>
       </div>

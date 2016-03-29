@@ -38,8 +38,8 @@ function getAll(arg) {
 function getAllAuthors(arg) {
   var queryString = 'select authors.id, authors.first_name, authors.last_name, authors.biography, '+
   'authors.portrait_url, array_agg(books.title || \', \' || books.id) '+
-  'as books from authors inner join books_authors on books_authors.author_id = authors.id '+
-  'inner join books on books_authors.book_id = books.id ';
+  'as books from authors right join books_authors on books_authors.author_id = authors.id '+
+  'right join books on books_authors.book_id = books.id ';
   if (arg) {
     queryString += ('where authors.id = ' + arg);
   }
@@ -63,13 +63,16 @@ function getAllAuthors(arg) {
 
 // add one book
 function addBook(body) {
+  if (!Array.isArray(body.authors)) {
+    body.authors = [body.authors];
+  }
   return Books().insert({
     title: body.title,
     genre: body.genre,
-    description: body.genre,
+    description: body.description,
     cover_url: body.cover_url
   }).returning('id').then(function(book) {
-    var authorIds = body.authors;
+    var authorIds = body.authors || [body.authors];
     var authorPromises = authorIds.map(function(id) {
       return Authors().where('id', id).returning('id');
     });
@@ -89,8 +92,12 @@ function addBook(body) {
 }
 // edit one book
 function editBook(id, body) {
-  return Books().where('id', id).update(body).returning('id').then(function(data) {
-    return data;
+  return BooksAuthors().where('book_id', id).del().then(function() {
+    return Books().where('id', id).del().then(function() {
+      return addBook(body).then(function(id) {
+        return id;
+      });
+    });
   });
 }
 // delete one book
@@ -98,31 +105,53 @@ function deleteBook(id) {
   return Books().where('id', id).del();
 }
 
-
-// get all authors
-function allAuthors() {
-  return Authors().then(function(data) {
-    return data;
-  });
-}
-// get one author
-function oneAuthor(id) {
-  return Authors().where('id', id).then(function(data) {
-    return data;
-  });
-}
 // add one author
 function addAuthor(body) {
-  return Authors().insert(body).returning('id').then(function(data) {
-    return data;
+  return Authors().insert({
+    first_name: body.first_name,
+    last_name: body.last_name,
+    biography: body.biography,
+    portrait_url: body.portrait_url
+  }).returning('id').then(function(author) {
+    if (body.books === undefined) {
+      body.books = [];
+    }
+    if (!Array.isArray(body.books)) {
+      body.books = [body.books];
+    }
+    console.log(body.books);
+    if (body.books.length) {
+      var bookIds = body.books;
+      var bookPromises = bookIds.map(function(id) {
+        return Books().where('id', id).returning('id');
+      });
+      return Promise.all(bookPromises).then(function(ids) {
+        var bookObject = ids.map(function(id) {
+           return {
+            book_id: id[0].id,
+            author_id: author[0]
+          };
+        });
+        return BooksAuthors().insert(bookObject).returning('author_id');
+      });
+      // map over authors and make new query for each author, then get array of promises.
+      // then promise.all and do something with that.  the result is an array of what im returning.
+    } else {
+      return author;
+    }
   });
 }
 // edit one author
 function editAuthor(id, body) {
-  return Authors().where('id', id).update(body).returning('id').then(function(data) {
-    return data;
+  return BooksAuthors().where('author_id', id).del().then(function() {
+    return Authors().where('id', id).del().then(function() {
+      return addAuthor(body).then(function(id) {
+        return id;
+      });
+    });
   });
 }
+
 // delete one author
 function deleteAuthor(id) {
   return Authors().where('id', id).del();
@@ -134,8 +163,6 @@ module.exports = {
   addBook: addBook,
   editBook: editBook,
   deleteBook: deleteBook,
-  allAuthors: allAuthors,
-  oneAuthor: oneAuthor,
   addAuthor: addAuthor,
   editAuthor: editAuthor,
   deleteAuthor: deleteAuthor,

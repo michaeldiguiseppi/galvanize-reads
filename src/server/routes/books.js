@@ -18,11 +18,9 @@ router.get('/', function(req, res, next) {
 
 // add new book
 router.get('/new', function(req, res, next) {
-  queries.getAll().then(function(data) {
-    queries.getAllAuthors().then(function(authors) {
-      res.render('books/new', {authors: authors, title: 'Add Book'});
+    queries.getAllAuthors().then(function(authorArray) {
+      res.render('books/new', {authorArray: authorArray, title: 'Add Book', authors: []});
     });
-  });
 });
 
 router.post('/new', function(req, res, next) {
@@ -34,11 +32,20 @@ router.post('/new', function(req, res, next) {
 
 // edit one book
 router.get('/:id/edit', function(req, res, next) {
-  queries.getAll(req.params.id).then(function(data) {
-    queries.getAllAuthors().then(function(authors) {
-      res.render('books/new', {book: data[0], title: 'Edit Book', authors: authors});
+  queries.getAll(req.params.id).then(function(books) {
+    queries.getAllAuthors().then(function(authorArray) {
+      var ids = books[0].authors.reduce(function(prev, curr) {
+        prev.push(+curr.id);
+        return prev;
+      }, []);
+      res.render('books/new', { title: 'Edit Book', book: books[0], authors: ids, authorArray: authorArray });
     });
   });
+  // queries.getAll(req.params.id).then(function(data) {
+  //   queries.getAllAuthors().then(function(authors) {
+  //     res.render('books/new', {book: data[0], title: 'Edit Book', authors: authors, currentAuthors: data[0].authors});
+  //   });
+  // });
 });
 
 router.post('/:id/edit', function(req, res, next) {
