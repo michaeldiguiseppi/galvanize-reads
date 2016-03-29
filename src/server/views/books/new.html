@@ -5,7 +5,11 @@
 
 {% block content %}
 <div class="container">
-  <form class="form-horizontal" method="POST" action="/books/new">
+  {% if book %}
+    <form class="form-horizontal" method="POST" action="/books/new">
+  {% else %}
+    <form class="form-horizontal" method="POST" action="/books/{{ book.id }}/edit">
+  {% endif %}
   <fieldset>
     <legend>{{ title }}</legend>
     <div class="form-group">

@@ -10,7 +10,7 @@ var utils = require('../lib/utils');
 
 // show all authors
 router.get('/', function(req, res, next) {
-  queries.allAuthors().then(function(data) {
+  queries.getAllAuthors().then(function(data) {
     res.render('authors/index', { authors: data });
   });
 });
@@ -19,11 +19,8 @@ router.get('/', function(req, res, next) {
 // add new author
 router.get('/new', function(req, res, next) {
   var booksArray = [];
-  queries.getAll().then(function(data) {
-    data.forEach(function(book) {
-      booksArray.push(book.title);
-    });
-    res.render('authors/new', { books: booksArray });
+  queries.getAllAuthors().then(function(data) {
+    res.render('authors/new', { books: data.books, title: 'Add Author' });
   });
 });
 
@@ -33,8 +30,8 @@ router.post('/new', function(req, res, next) {
 
 // edit one author
 router.get('/:id/edit', function(req, res, next) {
-  queries.oneAuthor(req.params.id).then(function(data) {
-    res.render('authors/new', { title: 'Edit Author', author: data[0] });
+  queries.getAllAuthors(req.params.id).then(function(data) {
+    res.render('authors/new', { title: 'Edit Author', author: data[0], books: data[0].books });
   });
 });
 

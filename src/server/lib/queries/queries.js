@@ -10,12 +10,10 @@ function BooksAuthors() {
 }
 
 function getAll(arg) {
-
   var queryString = 'select books.id, books.title, books.genre, books.description, '+
   'books.cover_url, array_agg(authors.first_name || \' \' || authors.last_name || \', \' || authors.id) '+
   'as authors from books inner join books_authors on books_authors.book_id = books.id '+
   'inner join authors on books_authors.author_id = authors.id ';
-
   if (arg) {
     queryString += ('where books.id = ' + arg);
   }
@@ -31,6 +29,32 @@ function getAll(arg) {
         authorsArray.push({name: newArray[0], id: newArray[1]});
       });
       row.authors = authorsArray;
+      returner.push(row);
+    });
+    return returner;
+  });
+}
+
+function getAllAuthors(arg) {
+  var queryString = 'select authors.id, authors.first_name, authors.last_name, authors.biography, '+
+  'authors.portrait_url, array_agg(books.title || \', \' || books.id) '+
+  'as books from authors inner join books_authors on books_authors.author_id = authors.id '+
+  'inner join books on books_authors.book_id = books.id ';
+  if (arg) {
+    queryString += ('where authors.id = ' + arg);
+  }
+  var queryEnd = ' group by authors.id, authors.first_name, authors.last_name, authors.biography, authors.portrait_url order by authors.id';
+  queryString += queryEnd;
+  return knex.raw(queryString)
+  .then(function(data) {
+    var returner = [];
+    data.rows.forEach(function(row) {
+      var booksArray = [];
+      row.books.forEach(function(book) {
+        var newArray = book.split(', ');
+        booksArray.push({title: newArray[0], id: newArray[1]});
+      });
+      row.books = booksArray;
       returner.push(row);
     });
     return returner;
@@ -98,6 +122,7 @@ function deleteAuthor(id) {
 
 module.exports = {
   getAll: getAll,
+  getAllAuthors: getAllAuthors,
   addBook: addBook,
   editBook: editBook,
   deleteBook: deleteBook,
