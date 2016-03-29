@@ -38,8 +38,8 @@ function getAll(arg) {
 function getAllAuthors(arg) {
   var queryString = 'select authors.id, authors.first_name, authors.last_name, authors.biography, '+
   'authors.portrait_url, array_agg(books.title || \', \' || books.id) '+
-  'as books from authors right join books_authors on books_authors.author_id = authors.id '+
-  'right join books on books_authors.book_id = books.id ';
+  'as books from authors left join books_authors on books_authors.author_id = authors.id '+
+  'left join books on books_authors.book_id = books.id ';
   if (arg) {
     queryString += ('where authors.id = ' + arg);
   }
@@ -50,12 +50,14 @@ function getAllAuthors(arg) {
     var returner = [];
     data.rows.forEach(function(row) {
       var booksArray = [];
-      row.books.forEach(function(book) {
-        var newArray = book.split(', ');
-        booksArray.push({title: newArray[0], id: newArray[1]});
-      });
-      row.books = booksArray;
-      returner.push(row);
+      if (row.books[0] !== null) {
+        row.books.forEach(function(book) {
+            var newArray = book.split(', ');
+            booksArray.push({title: newArray[0], id: newArray[1]});
+        });
+        row.books = booksArray;
+        returner.push(row);
+      }
     });
     return returner;
   });
@@ -160,7 +162,9 @@ function editAuthor(id, body) {
 function deleteAuthor(id) {
   return BooksAuthors().where('author_id', id).del().then(function() {
     return Authors().whereNotIn('id', BooksAuthors().select('author_id')).del().then(function(id) {
-      return id;
+      return Books().whereNotIn('id', BooksAuthors().select('book_id')).del().then(function(id) {
+        return id;
+      });
     });
   });
 }
