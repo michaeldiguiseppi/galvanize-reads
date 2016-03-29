@@ -17,6 +17,17 @@
       <p>
         {{ author.biography }}
       </p>
+      <table class="table table-striped table-bordered">
+        <tbody>
+          {% for book in author.books %}
+            <tr>
+              <td>
+                <a href="/books/{{ book.id }}">{{ book.title }}</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       <a href="/authors/{{ author.id }}/edit" class="btn btn-success">Edit</a>
       <a href="/authors/{{ author.id }}/delete" id="delete" class="btn btn-danger" onclick="delConfirm()">Delete</a>
     </div>
