@@ -6,9 +6,9 @@
 {% block content %}
 <div class="container">
   {% if book %}
-    <form class="form-horizontal" method="POST" action="/books/new">
-  {% else %}
     <form class="form-horizontal" method="POST" action="/books/{{ book.id }}/edit">
+  {% else %}
+    <form class="form-horizontal" method="POST" action="/books/new">
   {% endif %}
   <fieldset>
     <legend>{{ title }}</legend>
@@ -39,9 +39,9 @@
     <div class="form-group">
       <label for="authors" class="col-lg-2 control-label">Author</label>
       <div class="col-lg-6">
-        <select multiple="" class="form-control" id="author" name="author">
-          {% for author in book.authors %}
-          <option value="{{ author }}">{{ author }}</option>
+        <select multiple="" class="form-control" id="author" name="authors">
+          {% for author in authors %}
+          <option value="{{ author.id }}">{{ author.first_name }} {{ author.last_name}}</option>
           {% endfor %}
         </select>
       </div>

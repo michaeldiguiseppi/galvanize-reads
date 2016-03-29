@@ -19,39 +19,39 @@ router.get('/', function(req, res, next) {
 // add new book
 router.get('/new', function(req, res, next) {
   queries.getAll().then(function(data) {
-    var authorsArray = [];
-    data.forEach(function(book) {
-      authorsArray.push(book.authors);
+    queries.getAllAuthors().then(function(authors) {
+      res.render('books/new', {authors: authors, title: 'Add Book'});
     });
-    res.render('books/new', {authors: authorsArray, title: 'Add Book'});
   });
 });
 
 router.post('/new', function(req, res, next) {
   // use a query to input information into the DB.
-  queries.addBook(req.body, req.body.author).then(function(data) {
-    res.redirect('/books/' + data[0]);
+  queries.addBook(req.body).then(function(ids) {
+    res.redirect('/books/' + ids[0]);
   });
 });
 
 // edit one book
 router.get('/:id/edit', function(req, res, next) {
   queries.getAll(req.params.id).then(function(data) {
-    res.render('books/new', {book: data[0], title: 'Edit Book'});
+    queries.getAllAuthors().then(function(authors) {
+      res.render('books/new', {book: data[0], title: 'Edit Book', authors: authors});
+    });
   });
 });
 
 router.post('/:id/edit', function(req, res, next) {
   // use a query to edit the information in the DB based on ID.
   queries.editBook(req.params.id, req.body).then(function(data) {
-    res.redirect('/' + data[0]);
+    res.redirect('/books/' + data[0]);
   });
 });
 
 // delete one book
 router.post('/:id/delete', function(req, res, next) {
   queries.deleteBook(req.params.id).then(function() {
-    res.redirect('/');
+    res.redirect('/books');
   });
 });
 

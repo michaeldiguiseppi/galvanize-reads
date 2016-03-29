@@ -62,21 +62,29 @@ function getAllAuthors(arg) {
 }
 
 // add one book
-function addBook(body, id) {
+function addBook(body) {
   return Books().insert({
     title: body.title,
     genre: body.genre,
     description: body.genre,
     cover_url: body.cover_url
   }).returning('id').then(function(book) {
-    return Authors().where('id', id).then(function(author) {
-      return BooksAuthors().insert({
-        book_id: book,
-        author_id: author.id
-      }).then(function(data) {
-        return data;
-      });
+    var authorIds = body.authors;
+    var authorPromises = authorIds.map(function(id) {
+      return Authors().where('id', id).returning('id');
     });
+    return Promise.all(authorPromises).then(function(ids) {
+      var bookObject = ids.map(function(id) {
+         return {
+          book_id: book[0],
+          author_id: id[0].id
+        };
+      });
+      console.log('Book!', bookObject);
+      return BooksAuthors().insert(bookObject).returning('book_id');
+    });
+    // map over authors and make new query for each author, then get array of promises.
+    // then promise.all and do something with that.  the result is an array of what im returning.
   });
 }
 // edit one book

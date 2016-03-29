@@ -30,8 +30,14 @@ router.post('/new', function(req, res, next) {
 
 // edit one author
 router.get('/:id/edit', function(req, res, next) {
-  queries.getAllAuthors(req.params.id).then(function(data) {
-    res.render('authors/new', { title: 'Edit Author', author: data[0], books: data[0].books });
+  queries.getAllAuthors(req.params.id).then(function(authors) {
+    queries.getAll().then(function(bookArray) {
+      var ids = authors[0].books.reduce(function(prev, curr) {
+        prev.push(+curr.id);
+        return prev;
+      }, []);
+      res.render('authors/new', { title: 'Edit Author', author: authors[0], books: ids, bookArray: bookArray });
+    });
   });
 });
 
