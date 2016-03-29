@@ -51,8 +51,10 @@ router.post('/:id/edit', function(req, res, next) {
 });
 
 // delete one author
-router.post('/:id/delete', function(req, res, next) {
-
+router.get('/:id/delete', function(req, res, next) {
+  queries.deleteAuthor(req.params.id).then(function() {
+    res.redirect('/authors');
+  });
 });
 
 

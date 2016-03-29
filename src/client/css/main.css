@@ -22,7 +22,20 @@ a:hover {
 .biggest-button {
   height: 400px;
   width: 100%;
-  background-color: seagreen;
+}
+
+.books {
+  background-image: url('../images/books.jpg');
+  height: 400px;
+  width: 100%;
+  background-repeat: no-repeat;
+}
+
+.authors {
+  background-image: url('../images/authors.jpg');
+  height: 400px;
+  width: 100%;
+  background-repeat: no-repeat;
 }
 
 .big-button-label {
