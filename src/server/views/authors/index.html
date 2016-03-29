@@ -6,6 +6,13 @@
 {% block content %}
 
 <div class="container">
+  <div class="row">
+    <div class="col-lg-6">
+      <a href="/authors/new" class="btn btn-info">Add Author</a>
+      <br />
+    </div>
+  </div>
+  <br />
   {% for author in authors %}
     <div class="row">
       <a href="/authors/{{ author.id }}">
@@ -20,6 +27,8 @@
             {{ author.biography }}
           </p>
         </div>
+        <a href="/authors/{{ author.id }}/edit" class="btn btn-success">Edit</a>
+        <a href="/authors/{{ author.id }}/delete" id="delete" class="btn btn-danger" onclick="delConfirm()">Delete</a>
       </div>
     </a>
     <br />

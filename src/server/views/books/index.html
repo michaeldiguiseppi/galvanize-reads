@@ -6,6 +6,12 @@
 {% block content %}
 
   <div class="container">
+    <div class="row">
+      <div class="col-lg-6">
+        <a href="/books/new" class="btn btn-info">Add Book</a>
+      </div>
+    </div>
+    <br />
     {% for book in books %}
       <div class="row">
         <a href="/books/{{ book.id }}">
@@ -16,9 +22,12 @@
             <h3>
               {{ book.title }}
             </h3>
+          </a>
             <h4>
               By&nbsp;
-                  {{ book.authors }}
+              {% for author in book.authors %}
+                <a href="/authors/{{ author.id }}">{{ author.name }},</a>
+              {% endfor %}
             </h4>
             <p>
               Genre: {{ book.genre }}
@@ -27,8 +36,9 @@
               {{ book.description }}
             </p>
           </div>
+          <a href="/books/{{ book.id }}/edit" class="btn btn-success">Edit</a>
+          <a href="/books/{{ book.id }}/delete" id="delete" class="btn btn-danger" onclick="delConfirm()">Delete</a>
         </div>
-      </a>
       <br />
     {% endfor %}
   </div>

@@ -5,38 +5,14 @@ function Books() {
 function Authors() {
   return knex('authors');
 }
-
 function BooksAuthors() {
   return knex('books_authors');
 }
 
-// function getAllAuthors() {
-//   return Authors()
-//     .innerJoin('books_authors', 'authors.id', 'books_authors.author_id')
-//     .then(function(data) {
-//       return data;
-//     });
-// }
-
-// function getAllBooks() {
-//   return Books()
-//     .innerJoin('books_authors', 'books.id', 'books_authors.book_id')
-//     .then(function(books) {
-//       allAuthors().then(function(authors) {
-//         return authors;
-//       });
-//       attachAuthorsToBooks(books, authors);
-//     });
-// }
-
-// function attachAuthorsToBooks(books, authors) {
-//
-// }
-
 function getAll(arg) {
 
   var queryString = 'select books.id, books.title, books.genre, books.description, '+
-  'books.cover_url, string_agg(authors.first_name || \' \' || authors.last_name, \', \') '+
+  'books.cover_url, array_agg(authors.first_name || \' \' || authors.last_name || \', \' || authors.id) '+
   'as authors from books inner join books_authors on books_authors.book_id = books.id '+
   'inner join authors on books_authors.author_id = authors.id ';
 
@@ -47,29 +23,36 @@ function getAll(arg) {
   queryString += queryEnd;
   return knex.raw(queryString)
   .then(function(data) {
-    return data.rows;
+    var returner = [];
+    data.rows.forEach(function(row) {
+      var authorsArray = [];
+      row.authors.forEach(function(author) {
+        var newArray = author.split(', ');
+        authorsArray.push({name: newArray[0], id: newArray[1]});
+      });
+      row.authors = authorsArray;
+      returner.push(row);
+    });
+    return returner;
   });
 }
 
-// get all books
-function allBooks() {
-  return Books()
-  .innerJoin('books_authors', 'books.id', 'books_authors.book_id')
-  .innerJoin('authors', 'authors.id', 'books_authors.author_id')
-  .then(function(data) {
-    return data;
-  });
-}
-// get one book
-function oneBook(id) {
-  return Books().where('id', id).then(function(data) {
-    return data;
-  });
-}
 // add one book
-function addBook(body) {
-  return Books().insert(body).returning('id').then(function(data) {
-    return data;
+function addBook(body, id) {
+  return Books().insert({
+    title: body.title,
+    genre: body.genre,
+    description: body.genre,
+    cover_url: body.cover_url
+  }).returning('id').then(function(book) {
+    return Authors().where('id', id).then(function(author) {
+      return BooksAuthors().insert({
+        book_id: book,
+        author_id: author.id
+      }).then(function(data) {
+        return data;
+      });
+    });
   });
 }
 // edit one book
@@ -115,9 +98,6 @@ function deleteAuthor(id) {
 
 module.exports = {
   getAll: getAll,
-  //getAllBooks: getAllBooks,
-  allBooks: allBooks,
-  oneBook: oneBook,
   addBook: addBook,
   editBook: editBook,
   deleteBook: deleteBook,

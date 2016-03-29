@@ -4,12 +4,51 @@
 
 
 {% block content %}
-
-  <div class="container">
-
-    <h1>{{ title }}</h1>
-    <p>Welcome to {{ title }}</p>
-
-  </div>
-
+<div class="container">
+  <form class="form-horizontal" method="POST" action="/books/new">
+  <fieldset>
+    <legend>{{ title }}</legend>
+    <div class="form-group">
+      <label for="title" class="col-lg-2 control-label">Title</label>
+      <div class="col-lg-6">
+        <input type="text" class="form-control" id="title" name="title" placeholder="Title" required value="{{ book.title }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="genre" class="col-lg-2 control-label">Genre</label>
+      <div class="col-lg-6">
+        <input type="text" class="form-control" id="genre" name="genre" placeholder="Genre" required value="{{ book.genre }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="cover_url" class="col-lg-2 control-label">Cover URL</label>
+      <div class="col-lg-6">
+        <input type="url" class="form-control" id="cover_url" name="cover_url" placeholder="Cover URL" required value="{{ book.cover_url }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="textArea" class="col-lg-2 control-label">Description</label>
+      <div class="col-lg-6">
+        <textarea class="form-control" rows="10" id="textArea" name="description" placeholder="Description" required>{{ book.description }}</textarea>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="authors" class="col-lg-2 control-label">Author</label>
+      <div class="col-lg-6">
+        <select multiple="" class="form-control" id="author" name="author">
+          {% for author in book.authors %}
+          <option value="{{ author }}">{{ author }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-6 col-lg-offset-2">
+        <a href="/books" class="btn btn-warning">Cancel</a>
+        <button type="submit" class="btn btn-primary">{{ title }}</button>
+      </div>
+    </div>
+  </fieldset>
+  </form>
+</div>
 {% endblock %}

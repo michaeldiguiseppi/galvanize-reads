@@ -15,29 +15,29 @@ router.get('/', function(req, res, next) {
   });
 });
 
-// show one book
-router.get('/:id', function(req, res, next) {
-  queries.getAll(req.params.id).then(function(data) {
-    res.render('books/show', { book: data[0] });
-  });
-});
 
 // add new book
 router.get('/new', function(req, res, next) {
-  res.render('books/new');
+  queries.getAll().then(function(data) {
+    var authorsArray = [];
+    data.forEach(function(book) {
+      authorsArray.push(book.authors);
+    });
+    res.render('books/new', {authors: authorsArray, title: 'Add Book'});
+  });
 });
 
 router.post('/new', function(req, res, next) {
   // use a query to input information into the DB.
-  queries.addBook(req.body).then(function(data) {
-    res.redirect('/' + data[0]);
+  queries.addBook(req.body, req.body.author).then(function(data) {
+    res.redirect('/books/' + data[0]);
   });
 });
 
 // edit one book
 router.get('/:id/edit', function(req, res, next) {
-  queries.oneBook(req.params.id).then(function(data) {
-    res.render('books/new', {book: data[0]});
+  queries.getAll(req.params.id).then(function(data) {
+    res.render('books/new', {book: data[0], title: 'Edit Book'});
   });
 });
 
@@ -52,6 +52,13 @@ router.post('/:id/edit', function(req, res, next) {
 router.post('/:id/delete', function(req, res, next) {
   queries.deleteBook(req.params.id).then(function() {
     res.redirect('/');
+  });
+});
+
+// show one book
+router.get('/:id', function(req, res, next) {
+  queries.getAll(req.params.id).then(function(data) {
+    res.render('books/show', { book: data[0] });
   });
 });
 

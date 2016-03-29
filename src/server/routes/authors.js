@@ -15,16 +15,16 @@ router.get('/', function(req, res, next) {
   });
 });
 
-// show one author
-router.get('/:id', function(req, res, next) {
-  queries.oneAuthor(req.params.id).then(function(data) {
-      res.render('authors/show', {author: data[0]});
-  });
-});
 
 // add new author
 router.get('/new', function(req, res, next) {
-  res.render('authors/new', { title: 'Express' });
+  var booksArray = [];
+  queries.getAll().then(function(data) {
+    data.forEach(function(book) {
+      booksArray.push(book.title);
+    });
+    res.render('authors/new', { books: booksArray });
+  });
 });
 
 router.post('/new', function(req, res, next) {
@@ -33,7 +33,9 @@ router.post('/new', function(req, res, next) {
 
 // edit one author
 router.get('/:id/edit', function(req, res, next) {
-  res.render('authors/new', { title: 'Express' });
+  queries.oneAuthor(req.params.id).then(function(data) {
+    res.render('authors/new', { title: 'Edit Author', author: data[0] });
+  });
 });
 
 router.post('/:id/edit', function(req, res, next) {
@@ -43,6 +45,14 @@ router.post('/:id/edit', function(req, res, next) {
 // delete one author
 router.post('/:id/delete', function(req, res, next) {
 
+});
+
+
+// show one author
+router.get('/:id', function(req, res, next) {
+  queries.oneAuthor(req.params.id).then(function(data) {
+      res.render('authors/show', {author: data[0]});
+  });
 });
 
 module.exports = router;

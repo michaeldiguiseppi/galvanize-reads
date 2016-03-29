@@ -4,12 +4,55 @@
 
 
 {% block content %}
-
-  <div class="container">
-
-    <h1>{{ title }}</h1>
-    <p>Welcome to {{ title }}</p>
-
-  </div>
-
+<div class="container">
+  {% if author %}
+  <form class="form-horizontal" method="POST" action="/authors/{{ author.id }}/edit">
+  {% else %}
+  <form class="form-horizontal" method="POST" action="/authors/new">
+  {% endif %}
+  <fieldset>
+    <legend>{{ title }}</legend>
+    <div class="form-group">
+      <label for="first_name" class="col-lg-2 control-label">First Name</label>
+      <div class="col-lg-6">
+        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name" required value="{{ author.first_name }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="last_name" class="col-lg-2 control-label">Last Name</label>
+      <div class="col-lg-6">
+        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name" required value="{{ author.last_name }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="portrait_url" class="col-lg-2 control-label">Portrait URL</label>
+      <div class="col-lg-6">
+        <input type="url" class="form-control" id="portrait_url" name="portrait_url" placeholder="Portrait URL" required value="{{ author.portrait_url }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="textArea" class="col-lg-2 control-label">Biography</label>
+      <div class="col-lg-6">
+        <textarea class="form-control" rows="10" id="textArea" name="biography" placeholder="Biography" required>{{ author.biography }}</textarea>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="books" class="col-lg-2 control-label">Books</label>
+      <div class="col-lg-6">
+        <select multiple="" class="form-control" id="books" name="author">
+          {% for book in author.books %}
+          <option value="{{ book }}">{{ book }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-6 col-lg-offset-2">
+        <a href="/books" class="btn btn-warning">Cancel</a>
+        <button type="submit" class="btn btn-primary">{{ title }}</button>
+      </div>
+    </div>
+  </fieldset>
+  </form>
+</div>
 {% endblock %}
