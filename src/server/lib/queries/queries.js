@@ -161,7 +161,7 @@ function editAuthor(id, body) {
 // delete one author
 function deleteAuthor(id) {
   return BooksAuthors().where('author_id', id).del().then(function() {
-    return Authors().whereNotIn('id', BooksAuthors().select('author_id')).del().then(function(id) {
+    return Authors().whereNotIn(id, BooksAuthors().select('author_id')).del().then(function(id) {
       return Books().whereNotIn('id', BooksAuthors().select('book_id')).del().then(function(id) {
         return id;
       });
